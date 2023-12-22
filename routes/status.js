@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const Quiz = require('../models/Quiz');
 
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
     const now = new Date();
     try{
         await Quiz.updateMany(
