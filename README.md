@@ -1,4 +1,4 @@
-## Quiz Application Backend Development Assignment:
+# Quiz Backend Application:
 
 This assignment aims to assess your backend development skills using Node.js, Express.js, and MongoDB. You will be building a RESTful API for a quiz application that allows users to create and participate in timed quizzes.
 
