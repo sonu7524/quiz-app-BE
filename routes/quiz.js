@@ -5,7 +5,6 @@ const authorization = require('../middleware/authorization');
 
 quizRouter.post('/quizzes',authorization, async (req, res) => {
     const { questions, startDate, endDate } = req.body;
-  
     try{
         const newQuiz = new Quiz({
             questions,
@@ -22,18 +21,16 @@ quizRouter.post('/quizzes',authorization, async (req, res) => {
   
 quizRouter.get('/quizzes/active', authorization, async (req, res) => {
     const now = new Date();
-    await Quiz.findOne(
-      { startDate: { $lte: now }, endDate: { $gte: now }, status: 'Active' },
-      (err, quiz) => {
-        if (err) {
-          return res.status(500).json({ error: 'Error fetching active quiz' });
-        }
-        if (!quiz) {
-          return res.status(404).json({ message: 'No active quiz at the moment' });
-        }
-        res.json({ quiz });
-      }
-    );
+    try{
+      const quizzes = await Quiz.find(
+        { startDate: { $lte: now }, endDate: { $gte: now }, status: 'Active' }
+      );
+  
+      res.json({ quizzes });
+    }
+    catch(err){
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 quizRouter.get('/quizzes/:id/result', authorization, async (req, res) => {
@@ -59,13 +56,14 @@ quizRouter.get('/quizzes/:id/result', authorization, async (req, res) => {
     }
 });
 
-quizRouter.get('/quizzes/all', authorization, (req, res) => {
-    Quiz.find({}, (err, quizzes) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error fetching quizzes' });
+quizRouter.get('/quizzes/all', authorization, async (req, res) => {
+      try{
+        const quizzes = await Quiz.find();
+        res.json({ quizzes });
       }
-      res.json({ quizzes });
-    });
+      catch(err){
+          res.status(500).json({ error: 'Internal server error' });
+      }
 });
 
 module.exports = quizRouter;
