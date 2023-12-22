@@ -20,12 +20,10 @@ quizRouter.post('/quizzes',authorization, async (req, res) => {
 });
   
 quizRouter.get('/quizzes/active', authorization, async (req, res) => {
-    const now = new Date();
     try{
       const quizzes = await Quiz.find(
-        { startDate: { $lte: now }, endDate: { $gte: now }, status: 'Active' }
+        {status: 'Active' }
       );
-  
       res.json({ quizzes });
     }
     catch(err){
@@ -65,6 +63,23 @@ quizRouter.get('/quizzes/all', authorization, async (req, res) => {
           res.status(500).json({ error: 'Internal server error' });
       }
 });
+
+quizRouter.put('/quizzes/:id',authorization, async (req, res) => {
+    const quizId = req.params.id;
+    const { questions, startDate, endDate, status } = req.body;
+    try{
+        const quiz = await Quiz.findByIdAndUpdate(quizId,{
+            questions,
+            startDate,
+            endDate,
+            status
+        });
+        res.json({ message: 'Quiz updated successfully', quizDetails: quiz });
+    }
+    catch(err){
+        res.status(500).json({ error: 'Error updating quiz' });
+    }
+})
 
 module.exports = quizRouter;
   

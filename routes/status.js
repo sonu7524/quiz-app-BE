@@ -2,15 +2,19 @@ const cron = require('node-cron');
 const Quiz = require('../models/Quiz');
 
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => { // Runs every hour at the 0th minute
     const now = new Date();
-    try{
+    console.log('Current date/time:', now);
+
+    try {
         await Quiz.updateMany(
-            { endDate: { $lt: now } },
+            {
+                endDate: { $lt: now.getDate() },
+                status: 'Active'
+            },
             { $set: { status: 'Finished' } }
         );
-    }
-    catch(err){
+    } catch (err) {
         console.error('Error updating quiz status:', err);
     }
 });
